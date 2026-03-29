@@ -1,21 +1,21 @@
 name: Release
 
 on:
-  workflow_dispatch: ~
+  workflow_dispatch:
   release:
     types: [published]
 
 jobs:
   build:
-    name: 'Build & Publish to NPM'
-    runs-on: ubuntu-latest
+    name: Build & Publish to NPM
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
-      - uses: actions/cache@v3
+          registry-url: https://registry.npmjs.org
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}

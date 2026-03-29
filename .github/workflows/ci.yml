@@ -4,20 +4,22 @@ on:
   push:
     branches:
       - main
+      - master
   pull_request:
     branches:
       - main
 
+      - master
 jobs:
   lint:
-    name: 'Lint'
-    runs-on: ubuntu-latest
+    name: Lint
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -27,19 +29,19 @@ jobs:
       - run: npm run check-git-clean
 
   type-check:
-    name: 'Type Check'
-    runs-on: ubuntu-latest
+    name: Type Check
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.OS }}-node-
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.dts
           key: ${{ runner.OS }}-dts-${{ hashFiles('**/package-lock.json') }}
@@ -49,14 +51,14 @@ jobs:
       - run: npm run check-git-clean
 
   unit-test:
-    name: 'Build & Unit Test'
-    runs-on: ubuntu-latest
+    name: Build & Unit Test
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -67,8 +69,8 @@ jobs:
       - run: npm run check-git-clean
 
   website:
-    name: 'Build Website'
-    runs-on: ubuntu-latest
+    name: Build Website
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -76,7 +78,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -86,10 +88,10 @@ jobs:
       - run: npm run check-git-clean
 
   publish:
-    name: 'Publish'
+    name: Publish
     needs: [lint, type-check, unit-test, website]
     if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v2
         with:
@@ -97,7 +99,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -113,8 +115,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./npm
           publish_branch: npm
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
       - name: Publish Docs
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v3
@@ -122,5 +124,5 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/out
           cname: immutable-js.com
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
